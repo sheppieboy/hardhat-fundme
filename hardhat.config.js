@@ -4,6 +4,7 @@ require('@nomiclabs/hardhat-etherscan');
 require('./tasks/block-number');
 require('hardhat-gas-reporter');
 require('solidity-coverage');
+require('@nomiclabs/hardhat-ethers');
 
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
