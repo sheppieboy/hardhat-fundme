@@ -1,7 +1,6 @@
 require('@nomicfoundation/hardhat-toolbox');
 require('dotenv').config();
 require('@nomiclabs/hardhat-etherscan');
-require('./tasks/block-number');
 require('hardhat-gas-reporter');
 require('solidity-coverage');
 require('@nomiclabs/hardhat-ethers');
