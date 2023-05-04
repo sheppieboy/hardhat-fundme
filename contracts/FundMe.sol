@@ -1,17 +1,15 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
-// get withdraws
-//Withdraw fund
-//Set minimum funding value in USD
-
 import "./PriceConverter.sol";
 
-error NotOwner();
+error FundMe__NotOwner();
 
 contract FundMe {
+    //Type declarations
     using PriceConverter for uint256;
 
+    //state variables
     uint256 public constant MIN_USD = 50 * 1e18;
 
     address[] public funders;
@@ -21,9 +19,40 @@ contract FundMe {
 
     AggregatorV3Interface public priceFeed;
 
+    //Events
+    //Modifiers
+    modifier onlyOwner() {
+        if (msg.sender != i_owner) {
+            revert FundMe__NotOwner();
+        }
+        _;
+    }
+
+    //functions
+    //order:
+    //constrcutor
+    //recieve
+    //fallback
+    //external
+    //public
+    //internal
+    //private
+    //view/pure
+
     constructor(address priceFeedAddress) {
         i_owner = msg.sender;
         priceFeed = AggregatorV3Interface(priceFeedAddress);
+    }
+
+    //someone sends eth without calling fund function
+    //recieve
+    receive() external payable {
+        fund();
+    }
+
+    //fallback
+    fallback() external payable {
+        fund();
     }
 
     function fund() public payable {
@@ -64,23 +93,5 @@ contract FundMe {
             value: address(this).balance
         }("");
         require(callSuccess, "Called failed");
-    }
-
-    modifier onlyOwner() {
-        if (msg.sender != i_owner) {
-            revert NotOwner();
-        }
-        _;
-    }
-
-    //someone sends eth without calling fund function
-    //recieve
-    receive() external payable {
-        fund();
-    }
-
-    //fallback
-    fallback() external payable {
-        fund();
     }
 }
