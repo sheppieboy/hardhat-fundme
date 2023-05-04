@@ -12,8 +12,8 @@ contract FundMe {
     //state variables
     uint256 public constant MIN_USD = 50 * 1e18;
 
-    address[] public funders;
-    mapping(address => uint256) public addressToAmountFunded;
+    address[] public s_funders;
+    mapping(address => uint256) public s_addressToAmountFunded;
 
     address public immutable i_owner;
 
@@ -63,21 +63,21 @@ contract FundMe {
             msg.value.getConversionRate(priceFeed) >= MIN_USD,
             "Did'nt send enough eth"
         );
-        funders.push(msg.sender);
-        addressToAmountFunded[msg.sender] = msg.value;
+        s_funders.push(msg.sender);
+        s_addressToAmountFunded[msg.sender] = msg.value;
     }
 
     function withdraw() public onlyOwner {
         for (
             uint256 funderIndex = 0;
-            funderIndex < funders.length;
+            funderIndex < s_funders.length;
             funderIndex++
         ) {
-            address funder = funders[funderIndex];
-            addressToAmountFunded[funder] = 0;
+            address funder = s_funders[funderIndex];
+            s_addressToAmountFunded[funder] = 0;
         }
         //reset array
-        funders = new address[](0);
+        s_funders = new address[](0);
 
         //withdraw funds
 
@@ -93,5 +93,20 @@ contract FundMe {
             value: address(this).balance
         }("");
         require(callSuccess, "Called failed");
+    }
+
+    function cheaperWithdraw() public payable onlyOwner {
+        address[] memory funders = s_funders;
+        for (
+            uint256 funderIndex = 0;
+            funderIndex < funders.length;
+            funderIndex++
+        ) {
+            address funder = funders[funderIndex];
+            s_addressToAmountFunded[funder];
+        }
+        s_funders = new address[](0);
+        (bool success, ) = i_owner.call{value: address(this).balance}("");
+        require(success);
     }
 }
